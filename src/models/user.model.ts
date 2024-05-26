@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 // Used for create user
-export interface UserInput {
+export interface UserInit {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
 }
 
-export interface UserDocument extends UserInput, mongoose.Document {
+export interface UserDocument extends UserInit, mongoose.Document {
   profilePicture: string;
   bio: string;
   posts: mongoose.Types.ObjectId[];

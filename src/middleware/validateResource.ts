@@ -14,7 +14,7 @@ const validateResource =
       next();
     } catch (e: any) {
       logger.error(e);
-      return res.status(400).json({ error: e.message });
+      return res.status(400).send(e);
     }
   };
 
