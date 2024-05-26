@@ -1,11 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
+import connect from "./utils/connect";
+import logger from "./utils/logger";
+import routes from "./routes";
 
 dotenv.config();
-const app = express();
-
 const port = process.env.PORT;
 
+const app = express();
+
 app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}`);
+  logger.info(`Listening at http://localhost:${port}`);
+
+  connect();
+
+  routes(app);
 });
