@@ -1,6 +1,7 @@
 import { omit } from "lodash";
-import UserModel, { UserInit } from "../models/user.model";
+import UserModel, { UserDocument, UserInit } from "../models/user.model";
 import logger from "../utils/logger";
+import { FilterQuery } from "mongoose";
 
 // Register
 export async function createUser(input: UserInit) {
@@ -34,4 +35,9 @@ export async function validatePassword({
   }
 
   return omit(user.toJSON(), "password");
+}
+
+// Find User
+export async function findUser(query: FilterQuery<UserDocument>) {
+  return UserModel.findOne(query).lean();
 }

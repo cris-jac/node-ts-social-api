@@ -3,7 +3,13 @@ import { createUserHandler } from "./controller/user.controller";
 import validateResource from "./middleware/validateResource";
 import { createUserSchema } from "./schema/user.schema";
 import { createSessionSchema } from "./schema/session.schema";
-import { createSessionHandler } from "./controller/session.controller";
+import {
+  createSessionHandler,
+  deleteSessionHandler,
+  getSessionHandler,
+} from "./controller/session.controller";
+import deserializeUser from "./middleware/deserializeUser";
+import requireUser from "./middleware/requireUser";
 
 const routes = (app: Express) => {
   app.get("/healthcheck", (req: Request, res: Response) => res.sendStatus(200));
@@ -12,6 +18,13 @@ const routes = (app: Express) => {
     "/api/sessions",
     validateResource(createSessionSchema),
     createSessionHandler
+  );
+  app.get("/api/sessions", requireUser, getSessionHandler);
+  app.delete(
+    "/api/sessions",
+    // deserializeUser,
+    requireUser,
+    deleteSessionHandler
   );
 };
 
