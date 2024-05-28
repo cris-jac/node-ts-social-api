@@ -1,5 +1,8 @@
 import { Express, Request, Response } from "express";
-import { createUserHandler } from "./controller/user.controller";
+import {
+  createUserHandler,
+  searchUserHandler,
+} from "./controller/user.controller";
 import validateResource from "./middleware/validateResource";
 import { createUserSchema } from "./schema/user.schema";
 import { createSessionSchema } from "./schema/session.schema";
@@ -26,6 +29,8 @@ const routes = (app: Express) => {
     requireUser,
     deleteSessionHandler
   );
+
+  app.get("/api/users/search", requireUser, searchUserHandler);
 };
 
 export default routes;

@@ -41,3 +41,24 @@ export async function validatePassword({
 export async function findUser(query: FilterQuery<UserDocument>) {
   return UserModel.findOne(query).lean();
 }
+
+// Search User
+export async function searchUser(
+  query: FilterQuery<UserDocument>,
+  field: string,
+  direction: "asc" | "desc"
+) {
+  if (!field) {
+    field = "_id";
+  }
+
+  if (!direction) {
+    direction = "desc";
+  }
+
+  // logger.info("-Executing find with data: ", { query, field, direction });
+
+  return UserModel.find(query)
+    .sort({ [field]: direction })
+    .lean();
+}
