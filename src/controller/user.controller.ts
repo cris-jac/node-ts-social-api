@@ -11,6 +11,7 @@ import { CreateUserInput } from "../schema/user.schema";
 import { SearchUserQuery } from "../types/searchUser.interface";
 import { FilterQuery, UpdateQuery } from "mongoose";
 import UserModel, { UserDocument } from "../models/user.model";
+import { generateFilePath } from "../utils/generateFilePath";
 
 export async function createUserHandler(
   req: Request<{}, {}, CreateUserInput["body"]>,
@@ -94,6 +95,35 @@ export async function updateUserHandler(req: Request, res: Response) {
 
     logger.info("User updated");
     return res.send(omit(user, ["password", "updatedAt", "__v"]));
+  } catch (e) {
+    logger.error(e);
+    return res.status(409).send(e);
+  }
+}
+
+export async function updateProfilePictureHandler(req: Request, res: Response) {
+  const { id } = req.params;
+  const { filename } = req.file;
+
+  logger.info("Executed updateProfilePicture");
+  try {
+    const filePath = generateFilePath(filename);
+    console.log(filePath);
+
+    const updatedUser = await updateUser(
+      { _id: id },
+      { $set: { profilePicture: filePath } }
+    );
+
+    // If there are no changes
+    if (!updatedUser.modifiedCount) {
+      return res.status(404).send({ message: "User not updated" });
+    }
+
+    const user = await findUser({ _id: id });
+
+    logger.info("ProfilePicture updated successfully");
+    return res.status(200).send(omit(user, "password"));
   } catch (e) {
     logger.error(e);
     return res.status(409).send(e);

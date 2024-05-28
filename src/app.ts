@@ -4,6 +4,7 @@ import connect from "./utils/connect";
 import logger from "./utils/logger";
 import routes from "./routes";
 import deserializeUser from "./middleware/deserializeUser";
+import path from "path";
 
 dotenv.config();
 const port = process.env.PORT;
@@ -17,6 +18,10 @@ app.use((req, res, next) => {
   logger.info({ req: req.method + " " + req.path }, "Request");
   next();
 });
+app.use(
+  "/public/uploads",
+  express.static(path.join(__dirname, "../public/uploads"))
+);
 
 app.listen(port, () => {
   logger.info(`Listening at http://localhost:${port}`);
