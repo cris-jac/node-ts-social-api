@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
-import { createUser, findUser, searchUser } from "../service/user.service";
+import {
+  createUser,
+  findUser,
+  searchUser,
+  updateUser,
+} from "../service/user.service";
 import logger from "../utils/logger";
 import { omit } from "lodash";
 import { CreateUserInput } from "../schema/user.schema";
 import { SearchUserQuery } from "../types/searchUser.interface";
-import { FilterQuery } from "mongoose";
-import { UserDocument } from "../models/user.model";
+import { FilterQuery, UpdateQuery } from "mongoose";
+import UserModel, { UserDocument } from "../models/user.model";
 
 export async function createUserHandler(
   req: Request<{}, {}, CreateUserInput["body"]>,
@@ -70,5 +75,27 @@ export async function getUserHandler(req: Request, res: Response) {
 
 export async function updateUserHandler(req: Request, res: Response) {
   try {
-  } catch (e) {}
+    console.log("- Exec update");
+    const { id } = req.params;
+    const update = req.body;
+
+    // Check inputs
+    if (!id || !update) {
+      return res.status(400).send({ message: "Invalid request" });
+    }
+    const updatedUser = await updateUser({ _id: id }, { $set: update });
+
+    // If there are no changes
+    if (!updatedUser.modifiedCount) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    const user = await findUser({ _id: id });
+
+    logger.info("User updated");
+    return res.send(omit(user, ["password", "updatedAt", "__v"]));
+  } catch (e) {
+    logger.error(e);
+    return res.status(409).send(e);
+  }
 }

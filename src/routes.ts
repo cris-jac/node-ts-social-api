@@ -3,6 +3,7 @@ import {
   createUserHandler,
   getUserHandler,
   searchUserHandler,
+  updateUserHandler,
 } from "./controller/user.controller";
 import validateResource from "./middleware/validateResource";
 import { createUserSchema } from "./schema/user.schema";
@@ -33,6 +34,7 @@ const routes = (app: Express) => {
 
   app.get("/api/users/search", requireUser, searchUserHandler);
   app.get("/api/users/:id", getUserHandler);
+  app.patch("/api/users/:id", updateUserHandler);
 };
 
 export default routes;

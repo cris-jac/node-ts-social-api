@@ -25,7 +25,7 @@ export async function updateSession(
   query: FilterQuery<SessionDocument>,
   update: UpdateQuery<SessionDocument>
 ) {
-  return SessionModel.updateOne(query, update);
+  return SessionModel.updateOne(query, update).lean();
 }
 
 // Re-sign a token for session
