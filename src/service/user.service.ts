@@ -1,7 +1,7 @@
 import { omit } from "lodash";
 import UserModel, { UserDocument, UserInit } from "../models/user.model";
 import logger from "../utils/logger";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, UpdateQuery } from "mongoose";
 
 // Register
 export async function createUser(input: UserInit) {
@@ -61,4 +61,12 @@ export async function searchUser(
   return UserModel.find(query)
     .sort({ [field]: direction })
     .lean();
+}
+
+// Update user
+export async function updateUser(
+  query: FilterQuery<UserDocument>,
+  update: UpdateQuery<UserDocument>
+) {
+  return UserModel.updateOne(query, update);
 }

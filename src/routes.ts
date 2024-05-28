@@ -1,6 +1,7 @@
 import { Express, Request, Response } from "express";
 import {
   createUserHandler,
+  getUserHandler,
   searchUserHandler,
 } from "./controller/user.controller";
 import validateResource from "./middleware/validateResource";
@@ -31,6 +32,7 @@ const routes = (app: Express) => {
   );
 
   app.get("/api/users/search", requireUser, searchUserHandler);
+  app.get("/api/users/:id", getUserHandler);
 };
 
 export default routes;

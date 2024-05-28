@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser, searchUser } from "../service/user.service";
+import { createUser, findUser, searchUser } from "../service/user.service";
 import logger from "../utils/logger";
 import { omit } from "lodash";
 import { CreateUserInput } from "../schema/user.schema";
@@ -53,4 +53,22 @@ export async function searchUserHandler(
     logger.error(e);
     return res.status(409).send(e);
   }
+}
+
+export async function getUserHandler(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    const user = await findUser({ _id: id });
+    logger.info("User retrieved");
+    return res.send(omit(user, ["password", "updatedAt", "__v"]));
+  } catch (e: any) {
+    logger.error(e);
+    return res.status(409).send(e);
+  }
+}
+
+export async function updateUserHandler(req: Request, res: Response) {
+  try {
+  } catch (e) {}
 }
