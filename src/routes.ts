@@ -1,6 +1,8 @@
 import { Express, Request, Response } from "express";
 import {
+  addRemoveFriendHandler,
   createUserHandler,
+  getUserFriendsHandler,
   getUserHandler,
   searchUserHandler,
   updateProfilePictureHandler,
@@ -43,6 +45,9 @@ const routes = (app: Express) => {
     uploadImage.single("profile-picture"),
     updateProfilePictureHandler
   );
+
+  app.get("/api/users/:id/friends", getUserFriendsHandler);
+  app.patch("/api/users/:id/:friendId", addRemoveFriendHandler);
 };
 
 export default routes;

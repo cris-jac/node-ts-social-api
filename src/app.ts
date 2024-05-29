@@ -22,6 +22,7 @@ app.use(
   "/public/uploads",
   express.static(path.join(__dirname, "../public/uploads"))
 );
+// http://localhost:8080/public/uploads/profile-picture-1716928374498.jpg
 
 app.listen(port, () => {
   logger.info(`Listening at http://localhost:${port}`);

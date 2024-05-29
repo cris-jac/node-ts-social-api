@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   createUser,
   findUser,
+  getUserFriends,
   searchUser,
   updateUser,
 } from "../service/user.service";
@@ -9,7 +10,7 @@ import logger from "../utils/logger";
 import { omit } from "lodash";
 import { CreateUserInput } from "../schema/user.schema";
 import { SearchUserQuery } from "../types/searchUser.interface";
-import { FilterQuery, UpdateQuery } from "mongoose";
+import { FilterQuery, Types, UpdateQuery } from "mongoose";
 import UserModel, { UserDocument } from "../models/user.model";
 import { generateFilePath } from "../utils/generateFilePath";
 
@@ -127,5 +128,88 @@ export async function updateProfilePictureHandler(req: Request, res: Response) {
   } catch (e) {
     logger.error(e);
     return res.status(409).send(e);
+  }
+}
+
+export async function getUserFriendsHandler(req: Request, res: Response) {
+  const { id } = req.params;
+  logger.info("Executed get user friends");
+  try {
+    const user = await findUser({ _id: id });
+
+    if (!user) {
+      logger.error("User or friend not be found");
+      return res
+        .status(404)
+        .send({ message: "User or friend could not be found" });
+    }
+
+    logger.info("User exists! but...");
+
+    const formattedFriends = await getUserFriends(id);
+    if (formattedFriends.length < 1) {
+      logger.info("0 friends found");
+      return res.status(200).send([]);
+    }
+
+    return res.status(200).send(formattedFriends);
+  } catch (e) {
+    logger.error(e);
+    return res.status(404).send(e);
+  }
+}
+
+export async function addRemoveFriendHandler(req: Request, res: Response) {
+  try {
+    const { id, friendId } = req.params;
+    // const objId = new Types.ObjectId(id);
+    // const objFriendId = new Types.ObjectId(friendId);
+
+    const user = await findUser({ _id: id });
+    const friend = await findUser({ _id: friendId });
+
+    if (!user || !friend) {
+      logger.error("User or friend not be found");
+      return res
+        .status(404)
+        .send({ message: "User or friend could not be found" });
+    }
+
+    // Toggle friend in user list
+    const userExists = await findUser({
+      _id: id,
+      friends: { $in: [friendId] },
+    });
+    // if (!userExists) {
+    //   user.friends.push(objFriendId);
+    //   friend.friends.push(objId);
+    // } else {
+    //   user.friends.filter((id) => id === objFriendId);
+    //   friend.friends.filter((id) => id === objId);
+    // }
+
+    // await user.save();
+    // await friend.save();
+
+    if (!userExists) {
+      await updateUser({ _id: id }, { $push: { friends: friendId } });
+      await updateUser({ _id: friendId }, { $push: { friends: id } });
+    } else {
+      await updateUser({ _id: id }, { $pull: { friends: friendId } });
+      await updateUser({ _id: friendId }, { $pull: { friends: id } });
+    }
+    logger.info("User friends updated");
+
+    // retrieve list of friends
+    const formattedFriends = await getUserFriends(id);
+    if (!formattedFriends.length) {
+      logger.info("0 friends found");
+      return res.status(200).send([]);
+    }
+
+    return res.status(200).send(formattedFriends);
+  } catch (e) {
+    logger.error(e);
+    return res.status(404).send(e);
   }
 }
