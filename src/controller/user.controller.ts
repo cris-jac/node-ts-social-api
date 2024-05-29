@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   createUser,
   findUser,
+  getUserAttribute,
   getUserFriends,
   searchUser,
   updateUser,
@@ -133,7 +134,6 @@ export async function updateProfilePictureHandler(req: Request, res: Response) {
 
 export async function getUserFriendsHandler(req: Request, res: Response) {
   const { id } = req.params;
-  logger.info("Executed get user friends");
   try {
     const user = await findUser({ _id: id });
 
@@ -144,10 +144,8 @@ export async function getUserFriendsHandler(req: Request, res: Response) {
         .send({ message: "User or friend could not be found" });
     }
 
-    logger.info("User exists! but...");
-
     const formattedFriends = await getUserFriends(id);
-    if (formattedFriends.length < 1) {
+    if (!formattedFriends.length) {
       logger.info("0 friends found");
       return res.status(200).send([]);
     }
@@ -176,7 +174,7 @@ export async function addRemoveFriendHandler(req: Request, res: Response) {
     }
 
     // Toggle friend in user list
-    const userExists = await findUser({
+    const friendExists = await findUser({
       _id: id,
       friends: { $in: [friendId] },
     });
@@ -187,11 +185,10 @@ export async function addRemoveFriendHandler(req: Request, res: Response) {
     //   user.friends.filter((id) => id === objFriendId);
     //   friend.friends.filter((id) => id === objId);
     // }
-
     // await user.save();
     // await friend.save();
 
-    if (!userExists) {
+    if (!friendExists) {
       await updateUser({ _id: id }, { $push: { friends: friendId } });
       await updateUser({ _id: friendId }, { $push: { friends: id } });
     } else {
@@ -200,7 +197,7 @@ export async function addRemoveFriendHandler(req: Request, res: Response) {
     }
     logger.info("User friends updated");
 
-    // retrieve list of friends
+    // Retrieve list of friends
     const formattedFriends = await getUserFriends(id);
     if (!formattedFriends.length) {
       logger.info("0 friends found");
@@ -208,6 +205,82 @@ export async function addRemoveFriendHandler(req: Request, res: Response) {
     }
 
     return res.status(200).send(formattedFriends);
+  } catch (e) {
+    logger.error(e);
+    return res.status(404).send(e);
+  }
+}
+
+export async function followUserHandler(req: Request, res: Response) {
+  // utfId = userToFollowId
+  const { id, utfId } = req.params;
+
+  try {
+    const user = await findUser({ _id: id });
+    const userToFollow = await findUser({ _id: utfId });
+
+    if (!user || !userToFollow) {
+      logger.error("User or user to follow have not been found");
+      return res
+        .status(404)
+        .send({ message: "User or user to follow have not been found" });
+    }
+
+    const isFollowing = await findUser({
+      _id: id,
+      following: { $in: [utfId] },
+    });
+
+    if (isFollowing) {
+      // unfollow
+      await updateUser({ _id: id }, { $pull: { following: utfId } });
+      await updateUser({ _id: utfId }, { $pull: { followers: id } });
+    } else {
+      // follow
+      await updateUser({ _id: id }, { $push: { following: utfId } });
+      await updateUser({ _id: utfId }, { $push: { followers: id } });
+    }
+
+    // Get user following
+    const userFollowing = await getUserAttribute({ _id: id }, "following");
+
+    return res.status(200).send(userFollowing);
+  } catch (e) {
+    logger.error(e);
+    return res.status(409).send(e);
+  }
+}
+
+export async function getUserFollowingHandler(req: Request, res: Response) {
+  const { id } = req.params;
+
+  try {
+    const userFollowing = await getUserAttribute({ _id: id }, "following");
+
+    if (!userFollowing) {
+      logger.error("User not found");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).send(userFollowing);
+  } catch (e) {
+    logger.error(e);
+    return res.status(404).send(e);
+  }
+}
+
+export async function getUserFollowersHandler(req: Request, res: Response) {
+  const { id } = req.params;
+
+  try {
+    const userFollowers = await getUserAttribute({ _id: id }, "followers");
+
+    if (!userFollowers) {
+      logger.error("User not found");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).send(userFollowers);
   } catch (e) {
     logger.error(e);
     return res.status(404).send(e);

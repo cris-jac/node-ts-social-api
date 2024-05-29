@@ -83,14 +83,11 @@ export async function getUserFriends(
       .select("friends")
       .lean();
 
-    if (!user || user.friends.length > 0 || !Array.isArray(user.friends)) {
-      logger.info({ user: user }, "No friends found");
+    if (!user || !user.friends.length || !Array.isArray(user.friends)) {
       return [];
     }
-    logger.info("Service: User exists has more than 0 friend");
 
     // Fetch friends relevant attributes
-    // const friends = friendsIds.map((friendId: any) => UserModel.findById(friendId))
     const friendsProps = await Promise.all(
       user.friends.map(async (friendId) => {
         // const f = await UserModel.findById(friendId)
@@ -109,12 +106,8 @@ export async function getUserFriends(
           .lean();
       })
     );
-    logger.info("Service: friendProps exists? = ", { props: friendsProps });
 
     // Map friends
-    // const formattedFriends = friends.map(({ _id, lastName }) => {
-    //   _id, lastName;
-    // });
 
     const formattedFriends: FormattedFriend[] = friendsProps.map((friend) => ({
       _id: friend?._id!,
@@ -125,9 +118,22 @@ export async function getUserFriends(
     // const formattedFriends: FormattedFriend[] = friendsProps.filter(
     //   Boolean
     // ) as FormattedFriend[];
-    logger.info("Service: formattedFriends exist = ", formattedFriends);
 
     return formattedFriends;
+  } catch (e) {
+    logger.error(e);
+    throw e;
+  }
+}
+
+export async function getUserAttribute(
+  query: FilterQuery<UserDocument>,
+  attr: string
+) {
+  try {
+    return await UserModel.find(query, { [attr]: 1 })
+      .lean()
+      .exec();
   } catch (e) {
     logger.error(e);
     throw e;

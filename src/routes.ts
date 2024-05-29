@@ -2,6 +2,9 @@ import { Express, Request, Response } from "express";
 import {
   addRemoveFriendHandler,
   createUserHandler,
+  followUserHandler,
+  getUserFollowersHandler,
+  getUserFollowingHandler,
   getUserFriendsHandler,
   getUserHandler,
   searchUserHandler,
@@ -48,6 +51,10 @@ const routes = (app: Express) => {
 
   app.get("/api/users/:id/friends", getUserFriendsHandler);
   app.patch("/api/users/:id/:friendId", addRemoveFriendHandler);
+
+  app.get("/api/users/:id/following", getUserFollowingHandler);
+  app.get("/api/users/:id/followers", getUserFollowersHandler);
+  app.patch("/api/users/:id/follow/:utfId", followUserHandler);
 };
 
 export default routes;
