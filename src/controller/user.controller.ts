@@ -90,7 +90,7 @@ export async function updateUserHandler(req: Request, res: Response) {
 
     // If there are no changes
     if (!updatedUser.modifiedCount) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(404).send({ message: "User not updated" });
     }
 
     const user = await findUser({ _id: id });

@@ -25,7 +25,11 @@ import uploadImage from "./middleware/uploadImage";
 import {
   createPostHandler,
   createPostWithImageHandler,
+  deletePostHandler,
+  getPostsHandler,
   getUserPostsHandler,
+  likePostHandler,
+  updatePostHandler,
 } from "./controller/post.controller";
 import { createPostSchema } from "./schema/post.schema";
 
@@ -73,7 +77,13 @@ const routes = (app: Express) => {
     validateResource(createPostSchema),
     createPostWithImageHandler
   );
+
   app.get("/api/posts/:userId", getUserPostsHandler);
+  app.get("/api/posts", getPostsHandler);
+
+  app.patch("/api/posts/:id", updatePostHandler);
+  app.delete("/api/posts/:id", deletePostHandler);
+  app.patch("/api/posts/:id/likes", likePostHandler);
 };
 
 export default routes;

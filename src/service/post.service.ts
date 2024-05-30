@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import { FilterQuery, UpdateQuery } from "mongoose";
 import PostModel, { PostDocument, PostInit } from "../models/post.model";
 import UserModel, { UserDocument } from "../models/user.model";
 import logger from "../utils/logger";
@@ -28,7 +28,8 @@ export async function getUserPosts(userId: string) {
 }
 
 export async function findPosts(query: FilterQuery<PostDocument>) {
-  const posts = await PostModel.find(query).lean();
+  //   const posts = await PostModel.find(query).lean();
+  const posts = await PostModel.find(query).sort({ createdAt: 1 }).lean();
   //   logger.info({ posts: posts }, "-Service: Posts");
 
   const formattedPosts = await Promise.all(
@@ -68,4 +69,33 @@ export async function findPosts(query: FilterQuery<PostDocument>) {
 
   //   logger.info({ posts: formattedPosts }, "-Service: Formatted posts");
   return formattedPosts;
+}
+
+export async function updatePost(
+  query: FilterQuery<PostDocument>,
+  update: UpdateQuery<PostDocument>
+) {
+  return PostModel.updateOne(query, update);
+}
+
+export async function findPost(query: FilterQuery<PostDocument>) {
+  return PostModel.findOne(query).lean();
+}
+
+export async function deletePost(query: FilterQuery<PostDocument>) {
+  return PostModel.deleteOne(query);
+}
+
+export async function findPostAttribute(
+  query: FilterQuery<PostDocument>,
+  attribute: string
+) {
+  try {
+    return await PostModel.find(query, { [attribute]: 1 })
+      .lean()
+      .exec();
+  } catch (e) {
+    logger.error(e);
+    throw e;
+  }
 }
