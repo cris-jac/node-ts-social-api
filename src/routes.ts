@@ -22,6 +22,11 @@ import {
 import deserializeUser from "./middleware/deserializeUser";
 import requireUser from "./middleware/requireUser";
 import uploadImage from "./middleware/uploadImage";
+import {
+  createPostHandler,
+  createPostWithImageHandler,
+} from "./controller/post.controller";
+import { createPostSchema } from "./schema/post.schema";
 
 const routes = (app: Express) => {
   app.get("/healthcheck", (req: Request, res: Response) => res.sendStatus(200));
@@ -55,6 +60,14 @@ const routes = (app: Express) => {
   app.get("/api/users/:id/following", getUserFollowingHandler);
   app.get("/api/users/:id/followers", getUserFollowersHandler);
   app.patch("/api/users/:id/follow/:utfId", followUserHandler);
+
+  app.post("/api/posts", validateResource(createPostSchema), createPostHandler);
+  app.post(
+    "/api/posts/i",
+    uploadImage.array("picture", 10),
+    validateResource(createPostSchema),
+    createPostWithImageHandler
+  );
 };
 
 export default routes;

@@ -105,7 +105,7 @@ export async function updateUserHandler(req: Request, res: Response) {
 
 export async function updateProfilePictureHandler(req: Request, res: Response) {
   const { id } = req.params;
-  const { filename } = req.file;
+  const { filename } = req.file as Express.Multer.File;
 
   logger.info("Executed updateProfilePicture");
   try {
