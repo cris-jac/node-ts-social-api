@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import logger from "../utils/logger";
-import { createPost } from "../service/post.service";
+import { createPost, findPosts } from "../service/post.service";
 import { omit } from "lodash";
 import { CreatePostInput } from "../schema/post.schema";
 import { generateFilePath } from "../utils/generateFilePath";
 import { Multer } from "multer";
-import { updateUser } from "../service/user.service";
+import {
+  findUser,
+  getUserAttribute,
+  updateUser,
+} from "../service/user.service";
 
 export async function createPostHandler(
   req: Request<{}, {}, CreatePostInput["body"]>,
@@ -76,6 +80,27 @@ export async function createPostWithImageHandler(req: Request, res: Response) {
 
     logger.info("Post created");
     return res.send(omit(createdPost.toJSON()));
+  } catch (e) {
+    logger.error(e);
+    return res.status(409).send(e);
+  }
+}
+
+export async function getUserPostsHandler(req: Request, res: Response) {
+  const { userId } = req.params;
+
+  try {
+    const userExists = await findUser({ _id: userId });
+    if (!userExists) {
+      logger.error("User does not exist");
+      return res.status(404).json({ message: "User does not exist." });
+    }
+
+    // Get posts
+    const posts = await findPosts({ user: userId });
+
+    logger.info("Posts retrieved");
+    return res.status(200).send(posts);
   } catch (e) {
     logger.error(e);
     return res.status(409).send(e);

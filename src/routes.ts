@@ -25,11 +25,14 @@ import uploadImage from "./middleware/uploadImage";
 import {
   createPostHandler,
   createPostWithImageHandler,
+  getUserPostsHandler,
 } from "./controller/post.controller";
 import { createPostSchema } from "./schema/post.schema";
 
 const routes = (app: Express) => {
   app.get("/healthcheck", (req: Request, res: Response) => res.sendStatus(200));
+
+  // AUTH
   app.post("/api/users", validateResource(createUserSchema), createUserHandler);
   app.post(
     "/api/sessions",
@@ -44,6 +47,7 @@ const routes = (app: Express) => {
     deleteSessionHandler
   );
 
+  // USER
   app.get("/api/users/search", requireUser, searchUserHandler);
   app.get("/api/users/:id", getUserHandler);
   app.patch("/api/users/:id", updateUserHandler);
@@ -61,6 +65,7 @@ const routes = (app: Express) => {
   app.get("/api/users/:id/followers", getUserFollowersHandler);
   app.patch("/api/users/:id/follow/:utfId", followUserHandler);
 
+  // POSTS
   app.post("/api/posts", validateResource(createPostSchema), createPostHandler);
   app.post(
     "/api/posts/i",
@@ -68,6 +73,7 @@ const routes = (app: Express) => {
     validateResource(createPostSchema),
     createPostWithImageHandler
   );
+  app.get("/api/posts/:userId", getUserPostsHandler);
 };
 
 export default routes;
