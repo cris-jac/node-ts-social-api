@@ -1,5 +1,49 @@
 import { TypeOf, literal, object, string } from "zod";
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    CreateUserInput:
+ *      type: object
+ *      required:
+ *        - email
+ *        - firstName
+ *        - lastName
+ *        - password
+ *        - passwordConfirmation
+ *      properties:
+ *        email:
+ *          type: string
+ *          default: pepe@example.com
+ *        firstName:
+ *          type: string
+ *          default: Pepe
+ *        lastName:
+ *          type: string
+ *          default: Argento
+ *        password:
+ *          type: string
+ *          default: stringPassword123
+ *        passwordConfirmation:
+ *          type: string
+ *          default: stringPassword123
+ *    CreateUserResponse:
+ *      type: object
+ *      properties:
+ *        email:
+ *          type: string
+ *        firstName:
+ *          type: string
+ *        lastName:
+ *          type: string
+ *        _id:
+ *          type: string
+ *        createdAt:
+ *          type: string
+ *        updatedAt:
+ *          type: string
+ */
 export const createUserSchema = object({
   body: object({
     firstName: string({ required_error: "FirstName is required" }),

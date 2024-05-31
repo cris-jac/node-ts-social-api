@@ -5,9 +5,10 @@ import logger from "./utils/logger";
 import routes from "./routes";
 import deserializeUser from "./middleware/deserializeUser";
 import path from "path";
+import swaggerDocs from "./utils/swagger";
 
 dotenv.config();
-const port = process.env.PORT;
+const port: number = process.env.PORT;
 
 const app = express();
 
@@ -30,4 +31,6 @@ app.listen(port, () => {
   connect();
 
   routes(app);
+
+  swaggerDocs(app, port);
 });
