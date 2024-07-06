@@ -1,15 +1,37 @@
-# Books API
+# Social Media API
 
 ## Description
 
-<!-- EN: -->
+EN: <BR>
+Node API written in typescript, related to social media apps, in which users can to register, then create a new session. Users can add others users as friends, follow other users and undo this actions. Also users can create posts, being able to add images if they want to, after that, users can like or unlike to these posts.
+
+ES: <br>
+API de Node.js escrita en Typescript, relacionada con aplicaciones de redes sociales, en la que los usuarios pueden registrarse y luego crear una nueva sesión. Los usuarios pueden agregar a otros usuarios como amigos, seguir a otros usuarios y deshacer estas acciones. Además, los usuarios pueden crear publicaciones, pudiendo agregar imágenes si lo desean, después de eso, los usuarios pueden dar me gusta o no a las publicaciones.
 <br>
 <br>
+
+## Features
+
+EN:
+
+- Authentication verification with json web tokens (JWT)
+- Session-based user authentication
+- Refresh sessions with Refresh JWT
+- Logger implemented
+- Locally upload for images
+
+ES:
+
+- Verificación de autenticación con json web tokens (JWT)
+- Autenticación de usuario basada en sesiones
+- Renovacion de sesiones con Refresh JWT
+- Logger implementado
+- Cargado local de imagenes
 
 ## Requirements
 
 - Node.js 20.11
-- NPM v9.6
+- NPM 9.6
 - MongoDb
   <br>
 
@@ -27,7 +49,7 @@
    `git clone https://github.com/cris-jac/node-ts-social-api.git`
 
 2. Navigate to the repository folder:<br>
-   `cd node-ts-social-api-master`
+   `cd node-ts-social-api`
 
 3. Install dependencies:<br>
    `npm install`
@@ -44,7 +66,7 @@
    `git clone https://github.com/cris-jac/node-ts-social-api.git`
 
 2. Navegar a directorio del repositorio:<br>
-   `cd node-ts-social-api-master`
+   `cd node-ts-social-api`
 
 3. Instalar dependencias:<br>
    `npm install`
@@ -284,3 +306,19 @@ PATCH /api/posts/:id/likes
 | Parameter | Type     | Description                                  |
 | :-------- | :------- | :------------------------------------------- |
 | `id`      | `string` | **Required**. ID of the post to like/unlike. |
+
+<br>
+
+## To do
+
+EN:
+
+- Add Comment class model and integrate functionality
+- Implement Swagger documentation
+- Implement testing
+
+ES:
+
+- Agregar modelo e integrar funcionalidades para Comment (comentario)
+- Implementar la documentación de Swagger.
+- Implementar pruebas
